@@ -1,10 +1,5 @@
 source 'https://rubygems.org'
 
-group :heroku do
-  gem 'unicorn'
-  gem 'rails_12factor'
-end
-
 gem 'rails', '~> 3.2.18'
 
 gem 'authlogic'
@@ -16,19 +11,14 @@ gem 'carrierwave', '~> 0.6.1'
 
 # -- Database
 # SQLite:
-group :development do
-  gem 'sqlite3-ruby'
-end
-group :production do
-  # MySQL:
-  #gem 'mysql2'
-  # PostgreSQL (default on heroku):
-  gem 'pg'
-end
+gem 'sqlite3'
+
+# OpenStreeMap
+gem 'leaflet-rails'
 
 # -- Cloud storage
 # AWS S3 support. Can be disabled if using local file system instead of cloud storage.
-gem 'fog'
+#gem 'fog'
 
 # -- Photo resizing
 # MiniMagick
@@ -39,8 +29,13 @@ gem "mini_magick"
 
 # FreeImage:
 #gem "RubyInline"
-#gem "image_science", :git => 'git://github.com/perezd/image_science.git'
+gem "image_science"
 
 # -- EXIF
 # Mini exif tool. Can be disabled. Remove exif_read and exif_write filters in photo model
 gem "mini_exiftool_vendored"
+
+gem "dynamic_form"
+gem 'princely'
+#gem "acts_as_permissible", :git => "https://github.com/NoamB/acts_as_permissible.git"
+
