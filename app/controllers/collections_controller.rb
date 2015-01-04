@@ -3,7 +3,7 @@ class CollectionsController < ApplicationController
   before_filter :require_role_admin, :only => [:new, :create, :edit, :update, :destroy]
 
   def index
-    @collections = Collection.find(:all, :order => 'title')
+    @collections = Collection.all.order('title')
     respond_to do |format|
       format.html
       format.json  { render :json => @collections }
@@ -13,7 +13,7 @@ class CollectionsController < ApplicationController
   
   def show
     @collection = Collection.find( params[:id] )
-    @albums = @collection.albums.find(:all, :order => 'title')
+    @albums = @collection.albums.all.order('title')
     respond_to do |format|
       format.html
       format.json  { render :json => @collection }
@@ -27,7 +27,7 @@ class CollectionsController < ApplicationController
   end
 
   def create
-    @collection = Collection.new(params[:collection])
+    @collection = Collection.new(params.require(:collection).permit(:title, :description))
     if @collection.save
       flash[:notice] = "Collection created! Now lets add a new album."
       redirect_to new_collection_album_path(@collection)

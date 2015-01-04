@@ -5,7 +5,7 @@
 
 <div id="map_canvas"></div>
 
-<%= hidden_field_tag :all_tags, "'#{Tag.find(:all).map { |tag| tag.title }.join('\',\'')}'" %>
+<%= hidden_field_tag :all_tags, "'#{Tag.all.map { |tag| tag.title }.join('\',\'')}'" %>
 <%= hidden_field_tag :collection_id, params[:collection_id] %>
 <%= form.hidden_field :id %>
 <%= form.hidden_field :latitude %>

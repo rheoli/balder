@@ -6,7 +6,7 @@ class RoleMembership < ActiveRecord::Base
   validates_presence_of :roleable_id, :roleable_type, :role_id
   validates_uniqueness_of :role_id, :scope => [:roleable_id, :roleable_type]
   validates_numericality_of :roleable_id, :role_id
-  validates_format_of :roleable_type, :with => /^[A-Z]{1}[a-z0-9]+([A-Z]{1}[a-z0-9]+)*$/
+  validates_format_of :roleable_type, :with => /\A[A-Z]{1}[a-z0-9]+([A-Z]{1}[a-z0-9]+)*\z/
   validate :role_does_not_belong_to_itself_in_a_loop
   
   protected

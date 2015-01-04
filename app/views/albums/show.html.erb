@@ -3,7 +3,7 @@
 <div id="multipleimages">
 <table>
 	<% count = 0.0 %>
-	<% for photo in @album.photos.find(:all, :order => "Id ASC") %>
+	<% for photo in @album.photos.all.order(Id: :asc) %>
 	<% count += 1%>
   	<% if count == 1 || ( (count-1) / 4.0 == ( (count-1) / 4.0).to_i ) %><tr><% end %>
 	<td><%= link_to image_tag( photo.file.preview.url ), [@album.collections.first, @album, photo] %></td>
@@ -24,7 +24,7 @@
 
 <% unless @album.collections.empty? %>
 <p>Part of: 
-<% for collection in @album.collections.find(:all, :order => 'title') %>
+<% for collection in @album.collections.all.order('title') %>
 <%= link_to collection.title, collection_path(collection) %>
 <% end %>
 </p>

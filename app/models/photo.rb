@@ -15,9 +15,9 @@ class Photo < ActiveRecord::Base
 
   attr_accessor :tag_list
   
-  scope :untouched, :conditions => "photos.description IS NULL AND photos.id NOT IN ( SELECT photo_id FROM photo_tags)", :include => :album 
-  scope :previous, lambda { |p,a| { :conditions => ["id < :id AND album_Id = :album ", { :id => p, :album => a } ], :limit => 1, :order => "id DESC"} }
-  scope :next, lambda { |p,a| { :conditions => ["id > :id AND album_Id = :album ", { :id => p, :album => a } ], :limit => 1, :order => "id ASC"} }
+  scope :untouched, -> { where("photos.description IS NULL AND photos.id NOT IN ( SELECT photo_id FROM photo_tags)").includes(:album) }
+  scope :previous, lambda { |p,a| where("id < ? AND album_Id = ? ", p, a).limit(1).order(id: :desc) }
+  scope :next, lambda { |p,a| where("id > ? AND album_Id = ? ", p, a).limit(1).order(id: :asc) }
 
   def to_param
     "#{id}-#{title.parameterize}"
@@ -53,7 +53,6 @@ class Photo < ActiveRecord::Base
   def _delete
     0
   end
-  
 
   private
 

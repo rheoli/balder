@@ -4,15 +4,11 @@ class AlbumsController < ApplicationController
   
   def index
     if params[:tag_id]
-      @albums = Album.find(:all, :conditions => [ "id IN ( SELECT DISTINCT photos.album_id FROM photos WHERE photos.id IN ( SELECT photo_id FROM photo_tags WHERE photo_tags.tag_id = :q) )", { :q => Tag.find( params[:tag_id] ).id } ], :order => 'title')
+      @albums = Album.all.where(["id IN ( SELECT DISTINCT photos.album_id FROM photos WHERE photos.id IN ( SELECT photo_id FROM photo_tags WHERE photo_tags.tag_id = :q) )", { :q => Tag.find( params[:tag_id] ).id }]).order('title')
     elsif params[:q]
-      #search = params[:q]
-      #search = search.split("AND").map{|q|q.strip}
-      #@albums = Album.find(:all, :select => 'DISTINCT albums.id, albums.title', :limit => 20, :conditions => {  :tags => {:title => search}}, :joins => 'LEFT OUTER JOIN photos ON albums.id = photos.album_id LEFT OUTER JOIN photo_tags ON photos.id = photo_tags.photo_id LEFT OUTER JOIN tags ON photo_tags.tag_id = tags.id', :order => "albums.title ASC" )
-      #@albums = Album.find(:all, :select => 'DISTINCT album_id', :conditions => [ "title LIKE :q OR description LIKE :q OR id IN ( SELECT DISTINCT photos.album_id FROM photos WHERE photos.description LIKE :q OR photos.title LIKE :q OR photos.id IN ( SELECT photo_id FROM photo_tags LEFT OUTER JOIN tags ON photo_tags.tag_id = tags.id WHERE tags.title LIKE :q) )", { :q => '%' + params[:q] + '%' } ], :order => 'title')
       params[:q].split(" AND ").each {|q|
-        qphotos = Photo.find(:all, :select => 'DISTINCT album_id', :conditions => [ "description LIKE :q OR title LIKE :q OR id IN ( SELECT photo_id FROM photo_tags LEFT OUTER JOIN tags ON photo_tags.tag_id = tags.id WHERE tags.title LIKE :q)", { :q => '%' + q + '%' } ])
-        qalbums = Album.find(:all, :conditions => ['title LIKE :q OR description LIKE :q OR id IN (:ids)', { :ids => qphotos.map{|p|p.album_id}, :q => '%' + q + '%'  }], :order => 'title' )
+        qphotos = Photo.all.distinct('album_id').where([ "description LIKE :q OR title LIKE :q OR id IN ( SELECT photo_id FROM photo_tags LEFT OUTER JOIN tags ON photo_tags.tag_id = tags.id WHERE tags.title LIKE :q)", { :q => '%' + q + '%' } ])
+        qalbums = Album.all.where('title LIKE :q OR description LIKE :q OR id IN (:ids)', { :ids => qphotos.map{|p|p.album_id}, :q => '%' + q + '%'  }).order('title')
         if @albums
           @albums = @albums & qalbums
         else
@@ -20,7 +16,7 @@ class AlbumsController < ApplicationController
         end
       }
     else
-      @albums = Album.find(:all, :order => 'title')
+      @albums = Album.all.order('title')
     end
     respond_to do |format|
       format.html
@@ -53,8 +49,7 @@ class AlbumsController < ApplicationController
   end
 
   def create
-    @album = Album.new(params[:album])
-
+    @album = Album.new(params.require(:album).permit(:id, :latitude, :longitude, :title, :description, :address, :note, :tags))
     if @album.save
       flash[:notice] = "Album created! Now add some nice photos."
       if params[:collection_id]

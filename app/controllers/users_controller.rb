@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   end
   
   def create
-    @user = User.new(params[:user])
+    @user = User.new(params.require(:user).permit(:name, :email, :crypted_password, :password_salt, :password, :password_confirmation))
     if @user.save
       if User.all.length == 1
         @user.roles << Role.create(:name => 'admin')

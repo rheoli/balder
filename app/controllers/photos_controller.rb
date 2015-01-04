@@ -76,7 +76,7 @@ class PhotosController < ApplicationController
   end
 
   def create
-    @photo = Photo.new(params[:photo])
+    @photo = Photo.new(params.require(:photo).permit(:album_id, :name))
     @photo.file = params[:file]
     respond_to do |format|
         if @photo.save
@@ -133,6 +133,11 @@ class PhotosController < ApplicationController
     end
     flash[:notice] = "Updated photos!"
     redirect_to photos_path
+  end
+  
+  def download
+    path = "#{Rails.root}/uploads/#{params["type"]}/#{params["id"]}/#{params["basename"]}.#{params["extension"]}"
+    send_file path, :x_sendfile=>true
   end
   
   def destroy

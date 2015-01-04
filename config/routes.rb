@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
   resource :account, :controller => :users
-  match "login", :to => "user_sessions#new", :as => :login
-  match "authenticate", :to => "user_sessions#create", :as => :authenticate
-  match "logout", :to => "user_sessions#destroy", :as => :logout
+  get "login", :to => "user_sessions#new", :as => :login
+  post "authenticate", :to => "user_sessions#create", :as => :authenticate
+  get "logout", :to => "user_sessions#destroy", :as => :logout
   
   resources :authentications
-  match '/auth/:provider/callback' => 'authentications#create'
+  match '/auth/:provider/callback' => 'authentications#create', via: [:get, :post]
   
   resources :photos do
     collection do
@@ -16,6 +16,9 @@ Rails.application.routes.draw do
       get :scan
     end
   end
+  
+  get "/uploads/:type/:id/:basename.:extension", :controller => "photos", :action => "download"
+  
   resources :albums do
     collection do
       get :untouched
