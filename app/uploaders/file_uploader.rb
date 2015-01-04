@@ -28,6 +28,8 @@ class FileUploader < CarrierWave::Uploader::Base
   #     def default_url
   #       "/images/fallback/" + [version_name, "default.png"].compact.join('_')
   #     end
+  
+  process :auto_orient # this should go before all other "process" steps
 
   # Process files as they are uploaded.
   #     process :scale => [200, 300]
@@ -35,6 +37,12 @@ class FileUploader < CarrierWave::Uploader::Base
   #     def scale(width, height)
   #       # do something
   #     end
+  
+  def auto_orient
+    manipulate! do |image|
+      image.tap(&:auto_orient)
+    end
+  end
 
   # Create different versions of your uploaded files
        version :collection do
