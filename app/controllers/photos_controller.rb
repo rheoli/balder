@@ -25,7 +25,7 @@ class PhotosController < ApplicationController
         end
       }
     else
-      @photos = Photo.find(:all, :order => "photos.id ASC")
+      @photos = Photo.all.order(id: :asc)
     end
     respond_to do |format|
       format.html
@@ -76,8 +76,16 @@ class PhotosController < ApplicationController
   end
 
   def create
-    @photo = Photo.new(params.require(:photo).permit(:album_id, :name))
-    @photo.file = params[:file]
+    @photo = nil
+    if params[:name]=~/^(.+)\.([0-9]+)\.flickr$/
+      img=$1; flickr_id=$2
+      @photo = Photo.where("album_id LIKE ? AND file LIKE ?", params[:photo][:album_id], img).first
+      p @photo
+      @photo.flickr = flickr_id
+    else
+      @photo = Photo.new(params.require(:photo).permit(:album_id, :name))
+      @photo.file = params[:file]
+    end
     respond_to do |format|
         if @photo.save
           format.html { render :text => "FILEID:" + @photo.file.album.url }

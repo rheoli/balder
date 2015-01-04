@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150101150300) do
+ActiveRecord::Schema.define(version: 20150104162200) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "title",       null: false
@@ -84,10 +84,18 @@ ActiveRecord::Schema.define(version: 20150101150300) do
     t.float    "latitude"
     t.string   "file"
     t.text     "exif"
+    t.string   "flickr"
   end
 
   add_index "photos", ["album_id"], name: "index_photos_on_album_id"
   add_index "photos", ["id"], name: "index_photos_on_id", unique: true
+
+  create_table "references", force: :cascade do |t|
+    t.string   "flickr"
+    t.integer  "photo_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "role_memberships", force: :cascade do |t|
     t.integer  "roleable_id"
